@@ -1,5 +1,6 @@
 /**
  * \author Jeroen Van Aken, Bert Lagaisse, Ludo Bruynseels
+ * they did the template, implementation by yours truly, Omar Dardiri
  */
 
 #include <stdlib.h>
@@ -33,7 +34,19 @@ dplist_t *dpl_create() {
 void dpl_free(dplist_t **list) {
 
     //TODO: add your code here
-    //Do extensive testing with valgrind. 
+    if (list==NULL || *list==NULL) return;
+
+    dplist_node_t *current = (*list)->head;
+    dplist_node_t *next_node = NULL;
+
+    while(current !=NULL){
+        next_node = current->next; // save for a rainy day
+        free(current);   // free my man kanye
+        current = next_node; // the rainy day came
+    }
+    free(*list); //free his sister kanyee
+    *list = NULL;
+    //Do extensive testing with valgrind.ay ay captain, only if it doesnt do what i want it to do tho.
 
 }
 
@@ -46,7 +59,7 @@ void dpl_free(dplist_t **list) {
  **/
 
 
-dplist_t *dpl_insert_at_index(dplist_t *list, element_t element, int index) {
+dplist_t *dpl_insert_at_index(dplist_t *list, element_t element, int index) {// didnt make , dont touch it, no smart comments
     dplist_node_t *ref_at_index, *list_node;
     if (list == NULL) return NULL;
 
@@ -88,33 +101,79 @@ dplist_t *dpl_insert_at_index(dplist_t *list, element_t element, int index) {
 
 dplist_t *dpl_remove_at_index(dplist_t *list, int index) {
 
+
+
     //TODO: add your code here
-    return NULL;
+    if (list == NULL){
+         fprintf(stderr,"!!!!ERROR::list doesnt exist, WHY\n");
+         return NULL;}
+
+    dplist_node_t *node_to_remove = dpl_get_reference_at_index(list, index);
+    if (node_to_remove == NULL) return list; // from nothing and to nothing, poetry-- spongebob-2009
+    if (node_to_remove->prev == NULL ){
+    list->head = node_to_remove->next;}
+    else{ node_to_remove->prev->next = node_to_remove->next;}// works?no? if error CHECK HERE
+    if (node_to_remove->next != NULL) node_to_remove->next->prev = node_to_remove->prev;// same as 2 lines above, might be scuffed , recheclk
+    if (list->head != NULL) list->head->prev = NULL;
+    free(node_to_remove);// fix the leak, sleep with dry pants = good sleep
+    return list;
 }
 
 int dpl_size(dplist_t *list) {
 
     //TODO: add your code here
-    return -1;
+    if (list == NULL) return 0; // hello darkness my old friend
+    int size = 0;
+    dplist_node_t *current = list->head;
+    while (current != NULL) {
+        size++;
+        current = current->next;}
+    return size;
 }
 
 dplist_node_t *dpl_get_reference_at_index(dplist_t *list, int index) {
-    //int count = 0 ;
+    //int count = 0 ; ?? cant tell if i added this and commented it or if it was in the template , not used ignore
     dplist_node_t *dummy = NULL;
 
     //TODO: add your code here
+    if (list == NULL || list->head == NULL) return NULL; // if nothing then nothing
+    int size = dpl_size(list);
+    dplist_node_t *current = list->head;
+    int current_index = 0;
+    if(index >= size || index < 0){
+        fprintf(stderr,"!!!!ERROR::index out of bounds\n");
+        return NULL;
+    }
+    while (current != NULL && current_index < index){
+        current = current->next;
+        current_index++;
+    }
+    dummy = current;
     return dummy;
 }
 
 element_t dpl_get_element_at_index(dplist_t *list, int index) {
 
     //TODO: add your code here
-    return '\e';
+    if (list == NULL) return '\e';// i shall account for the lost souls
+    dplist_node_t *ref = dpl_get_reference_at_index(list, index);
+    if (ref == NULL) return '\e';
+    return ref->element;
 }
 
 int dpl_get_index_of_element(dplist_t *list, element_t element) {
 
     //TODO: add your code here
+    if (list == NULL) return -1;// running out of quotes ,ooooooooo might cause an index out of bound issue with the above implementation, if problem read this , DO NOT FORGET AND LOOK FOR THE ERROR FOR x HRS
+    int current_index = 0;
+    dplist_node_t *current = list->head;
+    while (current != NULL) {
+        if (current->element == element) {
+            return current_index;
+        }
+        current_index++;
+        current = current->next;
+    }
     return -1;
 }
 
