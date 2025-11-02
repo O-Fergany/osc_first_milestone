@@ -3,7 +3,7 @@
 
 
 #include "dplist.h"
-
+#include "dplist.c"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
